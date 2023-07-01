@@ -31,22 +31,37 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { Email, Phone, password, pan } = creadentials;
-        var bodyFormData = new FormData();
-        bodyFormData.append('phone', Phone);
-        axios({
-            method: "post",
-            url: "http://localhost:5000/send-otp",
-            data: bodyFormData,
-            headers: { "Content-Type": "multipart/form-data" },
-          })
-            .then(function (response) {
-              //handle success
-              console.log(response);
-            })
-            .catch(function (response) {
-              //handle error
-              console.log(response);
+        const otpResponse = await fetch("http://localhost:5000/api/auth/send-otp", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ Phone })
             });
+            const otpJson = await otpResponse.json();
+            if (otpJson.success) {
+                //setOtpSent(true);
+                alert("OTP sent to your phone. Please enter the OTP to complete registration.");
+            } else {
+                alert("Failed to send OTP");
+            }
+
+        // var bodyFormData = new FormData();
+        // bodyFormData.append('phone', Phone);
+        // axios({
+        //     method: "post",
+        //     url: "http://localhost:5000/send-otp",
+        //     data: bodyFormData,
+        //     headers: { "Content-Type": "multipart/form-data" },
+        //   })
+        //     .then(function (response) {
+        //       //handle success
+        //       console.log(response);
+        //     })
+        //     .catch(function (response) {
+        //       //handle error
+        //       console.log(response);
+        //     });
         // const [error, setError] = useState("");
         // const respose = await fetch("http://localhost:5000/api/auth/register", {
         //     method: 'POST',
