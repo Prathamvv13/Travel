@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import './signup.css'
 
+import axios from 'axios';
+
+
 const Signup = () => {
     const [creadentials, setCreadentials] = useState({ Email: "", Phone: "", password: "", cpassword: "", pan:""});
     let history = useNavigate();
@@ -28,24 +31,40 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const { Email, Phone, password, pan } = creadentials;
+        var bodyFormData = new FormData();
+        bodyFormData.append('phone', Phone);
+        axios({
+            method: "post",
+            url: "http://localhost:5000/send-otp",
+            data: bodyFormData,
+            headers: { "Content-Type": "multipart/form-data" },
+          })
+            .then(function (response) {
+              //handle success
+              console.log(response);
+            })
+            .catch(function (response) {
+              //handle error
+              console.log(response);
+            });
         // const [error, setError] = useState("");
-        const respose = await fetch("http://localhost:5000/api/auth/register", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ Email, Phone, password, pan })
-        });
-        const json = await respose.json();
-        console.log(json);
+        // const respose = await fetch("http://localhost:5000/api/auth/register", {
+        //     method: 'POST',
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     },
+        //     body: JSON.stringify({ Email, Phone, password, pan })
+        // });
+        // const json = await respose.json();
+        // console.log(json);
 
-        if (json.success) {
-            localStorage.setItem('token', json.authtoken);
-            history("/");
-        }
-        else {
-            alert("Invalid creadentials");
-        }
+        // if (json.success) {
+        //     localStorage.setItem('token', json.authtoken);
+        //     history("/");
+        // }
+        // else {
+        //     alert("Invalid creadentials");
+        // }
     }
     const onchange = (e) => {
         setCreadentials({ ...creadentials, [e.target.name]: e.target.value });
