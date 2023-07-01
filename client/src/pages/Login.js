@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import {useNavigate,Link} from 'react-router-dom'
-import "./login.css";
+import "./css/login.css";
 
 const Login = () => {
     const [creadentials, setCreadentials] = useState({ Email: "", password: "" });
-    const [error, setError] = useState("");
+    // const [error, setError] = useState("");
     // const [password, setPassword] = useState("");
     // const [email, setEmail] = useState("");
 
@@ -23,7 +23,7 @@ const Login = () => {
 
         if(json.success){
             localStorage.setItem('token', json.authtoken);
-            history("/home");
+            history("/Home");
         }
         else{
             alert("Invalid creadentials");
@@ -38,7 +38,7 @@ const Login = () => {
             <div className="login-screen">
                 <form className="login-screen__form" onSubmit={handleSubmit}>
                     <h3 className="login-screen__title">Login</h3>
-                    {error && <span className="error-message">{error}</span>}
+                    {/* {error && <span className="error-message">{error}</span>} */}
 
                     <div className="form-group">
                         <label style={{fontSize:'18px'}} htmlFor="Email">Email:</label>

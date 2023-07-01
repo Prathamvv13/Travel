@@ -1,50 +1,34 @@
 import React, { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import './signup.css'
+import './css/signup.css'
 
-import axios from 'axios';
+// import axios from 'axios';
 
 
 const Signup = () => {
-    const [creadentials, setCreadentials] = useState({ Email: "", Phone: "", password: "", cpassword: "", pan:""});
+    const [creadentials, setCreadentials] = useState({ Email: "", Phone: "", password: "", cpassword: "" });
     let history = useNavigate();
-
-
-
-    const validatePan= async(e)=>{
-        e.preventDefault();
-        var txtPANCard = document.getElementById("pan");
-        var lblPANCard = document.getElementById("pan-err")
-        var corrpan = document.getElementById("pan-corr");
-        var regex = /([A-Z]){5}([0-9]){4}([A-Z]){1}$/;
-        if (regex.test(txtPANCard.value.toUpperCase())) {
-            lblPANCard.style.visibility = "hidden";
-            corrpan.style.visibility = "visible";
-            return true;
-        } else {
-            lblPANCard.style.visibility = "visible";
-            corrpan.style.visibility = "hidden";
-            return false;
-        }
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const { Email, Phone, password, pan } = creadentials;
+        const { Email, Phone, password } = creadentials;
         const otpResponse = await fetch("http://localhost:5000/api/auth/send-otp", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ Phone })
-            });
-            const otpJson = await otpResponse.json();
-            if (otpJson.success) {
-                //setOtpSent(true);
-                alert("OTP sent to your phone. Please enter the OTP to complete registration.");
-            } else {
-                alert("Failed to send OTP");
-            }
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ Phone })
+        });
+        const otpJson = await otpResponse.json();
+        if (otpJson.success) {
+            //setOtpSent(true);
+            alert("OTP sent to your phone. Please enter the OTP to complete registration.");
+            // history('/otpverify', {state: {Phone: JSON.stringify(Phone), Email: JSON.stringify(Email), password: JSON.stringify(password)}});
+            history('/otpverify', {state: {Phone: Phone, Email: Email, password: password}});
+
+        } else {
+            alert("Failed to send OTP");
+        }
 
         // var bodyFormData = new FormData();
         // bodyFormData.append('phone', Phone);
@@ -90,27 +74,27 @@ const Signup = () => {
             <div className="register-screen">
                 {/* <h1 style={{ textAlign: "center" }}>Signup</h1> */}
                 <form className='register-screen__form' onSubmit={handleSubmit}>
-                    <h3 className="register-screen__title" style={{fontSize:'30px'}}>Register</h3>
+                    <h3 className="register-screen__title" style={{ fontSize: '30px' }}>Register</h3>
                     {/* {error && <span className="error-message">{error}</span>} */}
-                    
+
                     <div className="form-group">
-                        <label style={{fontSize:'18px'}} htmlFor="Email">Email:</label>
-                        <input type="email" name="Email" id="Email" placeholder="Enter Email" value={creadentials.Email} onChange={onchange} required/>
+                        <label style={{ fontSize: '18px' }} htmlFor="Email">Email:</label>
+                        <input type="email" name="Email" id="Email" placeholder="Enter Email" value={creadentials.Email} onChange={onchange} required />
                     </div>
 
                     <div className="form-group">
-                        <label style={{fontSize:'18px'}} htmlFor="Phone">Phone:</label>
+                        <label style={{ fontSize: '18px' }} htmlFor="Phone">Phone:</label>
                         <input type="tel" name='Phone' placeholder="Enter Phone" onChange={onchange} value={creadentials.Phone} id="Phone" />
                     </div>
 
                     <div className="form-group">
-                        <label style={{fontSize:'18px'}} htmlFor="password">Password:</label>
-                        <input type="password" name="password" id="password" placeholder="Enter Password" value={creadentials.password} onChange={onchange} required/>
+                        <label style={{ fontSize: '18px' }} htmlFor="password">Password:</label>
+                        <input type="password" name="password" id="password" placeholder="Enter Password" value={creadentials.password} onChange={onchange} required />
                     </div>
 
                     <div className="form-group">
-                        <label style={{fontSize:'18px'}} htmlFor="cpassword">Confirm Password:</label>
-                        <input type="password" name="cpassword" id="cpassword" placeholder="Enter Password again" onChange={onchange} required/>
+                        <label style={{ fontSize: '18px' }} htmlFor="cpassword">Confirm Password:</label>
+                        <input type="password" name="cpassword" id="cpassword" placeholder="Enter Password again" onChange={onchange} required />
                     </div>
 
                     {/* <div className="form-group">

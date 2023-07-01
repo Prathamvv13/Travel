@@ -7,6 +7,8 @@ import {
 import Login from './pages/Login';
 import "./index.css";
 import Signup from './pages/Signup';
+import OTP from './pages/OTP';
+import Home from './pages/Home';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Routes>
         <Route exact path="/" element = {<Login/>}/>
         <Route exact path="/signup" element = {<Signup/>}/>
+        <Route exact path="/otpverify" element = {<OTP/>}/>
+        <Route exact path="/Home" element = {<Home/>}/>
       </Routes>
     </Router>
     </>
