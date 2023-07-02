@@ -1,8 +1,12 @@
+require("dotenv").config()
 const mongoose = require('mongoose');
-const mongoURI = "mongodb://localhost:27017/";
+const mongoURI = process.env.MONGO_DB_URI;
+
 
 const connectToMongo = ()=>{
-    mongoose.connect(mongoURI).catch(error=>handleError(error));
+    mongoose.connect(mongoURI,{
+        dbName: 'Travel'
+    }).then((result)=> console.log("Connected to Database")).catch(error=>handleError(error));
 }
 
 module.exports = connectToMongo;

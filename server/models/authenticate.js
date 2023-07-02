@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
-const UsersSchema = new Schema({
+const authenticate = new Schema({
   Phone:{
     type:Number,
     required:true
@@ -19,4 +19,4 @@ const UsersSchema = new Schema({
   },
 
 });
-module.exports = mongoose.model('Users', UsersSchema);
+module.exports = mongoose.model('authenticate', authenticate);

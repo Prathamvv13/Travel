@@ -1,9 +1,10 @@
 require("dotenv").config()
-const Users = require('../models/Users');
+const authenticate = require('../models/authenticate');
 const bcrypt = require('bcryptjs');
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
+var jwt = require('jsonwebtoken');
 
 
 const generateOtp = async (req,res) =>{
@@ -19,6 +20,7 @@ const generateOtp = async (req,res) =>{
 const verifyOtp = async (req,res)=>{
     const {OTP} = req.body
     const {Phone} = req.body
+    var check = false;
     // const {Email} = req.body
     // const {password} = req.body
     let success = false;
@@ -30,43 +32,44 @@ const verifyOtp = async (req,res)=>{
       .create({to: Phone, code: OTP})
       .then(verification_check => {console.log(verification_check.status)
         if(verification_check.status == "approved"){
-            res.json({ success: true, message: 'OTP sent successfully' })
+            check = true;
+            // res.json({ success: true, message: 'OTP sent successfully' })
         }
         else{
             res.json({ success: false, message: 'Incorrect OTP!!' })
         }
         })
+    try {
+        console.log(req.body);
+        let user = await authenticate.findOne({ Email: req.body.Email });
 
+        if (user) {
+            return res.status(400).send(success,"user already exists");
+        }
 
-    // try {
-    //     console.log(req.body);
-    //     let user = await Users.findOne({ Email: req.body.Email });
+        //creating new user
+        const salt = await bcrypt.genSalt(10);
+        const secPass = await bcrypt.hash(req.body.password, salt);
+        user = await authenticate.create({
+            Phone: parseInt(req.body.Phone),
+            Email: req.body.Email,
+            password: secPass,
+        });
 
-    //     if (user) {
-    //         return res.status(400).send(success,"user already exists");
-    //     }
-
-    //     //creating new user
-    //     const salt = await bcrypt.genSalt(10);
-    //     const secPass = await bcrypt.hash(req.body.password, salt);
-    //     user = await Users.create({
-    //         Phone: parseInt(req.body.Phone),
-    //         Email: req.body.Email,
-    //         password: secPass,
-    //     });
-
-    //     const data = {
-    //         user: {
-    //             id: user.id
-    //         }
-    //     }
-
-    //     success = true;
-    //     res.json({success});
-    // } catch (error) {
-    //     console.error(error.message);
-    //     // res.status(500).send(success,"some error occured");
-    // }
+        const data = {
+            user: {
+                id: user.id
+            }
+        }
+        const token = jwt.sign(data,process.env.JWT_KEY);
+        success = true;
+        if(check){
+            res.json({success,token});
+        }
+    } catch (error) {
+        console.error(error.message);
+        // res.status(500).send(success,"some error occured");
+    }
 };
 
 const login = async(req,res)=>{
@@ -75,7 +78,7 @@ const login = async(req,res)=>{
     const {Email, password} = req.body;
 
     try{
-        let user = await Users.findOne({ Email });
+        let user = await authenticate.findOne({ Email });
         if (!user) {
             return res.status(404).json({ success, errors: "use correct creadentials" });
         }
@@ -90,9 +93,9 @@ const login = async(req,res)=>{
                 id: user.id
             }
         }
-        // const authToken = jwt.sign(data, JWT_SECRETE);
+        const authToken = jwt.sign(data, process.env.JWT_KEY);
         success = true;
-        res.json({ success });
+        res.json({ success,authToken });
     }
     catch (error) {
         console.error(error.message);

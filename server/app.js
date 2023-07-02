@@ -11,20 +11,12 @@ const corsOptions ={
     optionSuccessStatus:200,
   }
 
-
 // Middleware
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
 app.use("/api/auth",authRouter);
 
-
-// connectToMongo()
-
-
-
-
-
-
+connectToMongo();
 
 app.listen(5000, () => {
     console.log('Server is running on port 5000');});
